@@ -2,8 +2,8 @@
 
 sudo apt install wireguard;
 
-if [ ! -d ~/wg-quick ]; then
-	mkdir wg-quick;
+if [ ! -d ~/wg ]; then
+	mkdir wg;
 fi
 
 # get root
@@ -13,7 +13,7 @@ fi
 
 sudo apt install curl;
 
-cd  ~/wg-quick
+cd  ~/wg
 
 path_conf=/etc/wireguard
 FILE=/etc/wireguard/wg0.conf

@@ -17,7 +17,7 @@ cd  ~/wg
 
 path_conf=/etc/wireguard
 FILE=/etc/wireguard/wg0.conf
-if [ ! -f $FILE  ]; then
+if [ ! -f .wg0.conf ]; then
 
 	# Generation keys for wireguard server  private and public
 	sudo wg genkey | sudo  tee  $path_conf/privatekey | sudo wg pubkey | sudo tee $path_conf/publickey;
@@ -93,7 +93,8 @@ if [ ! -f $FILE  ]; then
 	echo -e "Endpoint = $SERVER_IP:$port" >> "$user".conf
 	echo -e "AllowedIPs = 0.0.0.0/0" >> "$user".conf
 	echo -e "PersistentKeepalive = 20" >> "$user".conf
-
+	
+	sudo cat /etc/wireguard/wg0.conf >> ./.wg0.conf
 	# Download user config file
 	#scp -r $USER@$SERVER_IP:/etc/wireguard/"$user".conf ~/"$user".conf
 else
@@ -154,7 +155,8 @@ else
 	echo -e "Endpoint = $SERVER_IP:$port" >> "$user".conf
 	echo -e "AllowedIPs = 0.0.0.0/0" >> "$user".conf
 	echo -e "PersistentKeepalive = 20" >> "$user".conf
-
+	
+	sudo cat /etc/wireguard/wg0.conf | tee ./.wg0.conf
 	# Download user config file
 	#scp -r $USER@$SERVER_IP:/etc/wireguard/"$user".conf ~/"$user".conf
 	else

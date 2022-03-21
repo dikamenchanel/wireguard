@@ -1,24 +1,18 @@
 #!/bin/bash
 
-sudo apt install wireguard;
-
 if [ ! -d ~/wg ]; then
-	mkdir wg;
+	mkdir ~/wg;
 fi
 
-# get root
-#sudo -i
-#D=wg_user_conf
 # change diractroy
-
-sudo apt install curl;
-
 cd  ~/wg
 
 path_conf=/etc/wireguard
 FILE=/etc/wireguard/wg0.conf
 if [ ! -f .wg0.conf ]; then
 
+	sudo apt install wireguard;
+	
 	# Generation keys for wireguard server  private and public
 	sudo wg genkey | sudo  tee  $path_conf/privatekey | sudo wg pubkey | sudo tee $path_conf/publickey;
 	sudo chmod 600 $path_conf/privatekey

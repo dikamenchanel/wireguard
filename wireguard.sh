@@ -9,8 +9,11 @@ cd  ~/wg
 
 path_conf=/etc/wireguard
 FILE=/etc/wireguard/wg0.conf
-if [ ! -f .wg0.conf ]; then
 
+if [ ! -f .wg0.conf ]; then
+	
+	sudo apt install curl
+	
 	sudo apt install wireguard;
 	
 	# Generation keys for wireguard server  private and public

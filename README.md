@@ -1,2 +1,2 @@
-# wireguard
-это сценарий bash для настройки wireguard server
+ # wireguard
+это сценарий bash для настройки wireguard Free VPN server

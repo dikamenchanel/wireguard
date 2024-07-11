@@ -2,6 +2,7 @@
 
 
 import os
+import sys
 import subprocess
 import platform
 import socket
@@ -13,7 +14,7 @@ import getpass
 
 
 USER = getpass.getuser()
-
+HOME_DIR_USER = os.path.expanduser("~")
 
 
 WG_DIR = '/etc/wireguard'
@@ -34,6 +35,11 @@ def get_public_ip():
 
 SERVER_PUBLIC_IP = get_public_ip()
 
+
+def check_superuser():
+    if os.geteuid() != 0:
+        print("This script must be run as root!")
+        sys.exit(1)
 
 
 
@@ -89,23 +95,15 @@ def open_firewall_port(port):
 
 
 def create_server_config():
-
-    # Check if /etc/wireguard directory exists, create it if not
     if not os.path.exists(WG_DIR):
         os.makedirs(WG_DIR)
-        print(f"Created directory: {WG_DIR}")
-
     if not os.path.exists(WG_DIR_SERVER_KEY):
         os.makedirs(WG_DIR_SERVER_KEY)
-        print(f"Created directory: {WG_DIR_SERVER_KEY}")
     if not os.path.exists(WG_DIR_KEY_PEER):
         os.makedirs(WG_DIR_KEY_PEER)
-        print(f"Created directory: {WG_DIR_KEY_PEER}")
     if not os.path.exists(WG_DIR_CONFIG_PEER):
         os.makedirs(WG_DIR_CONFIG_PEER)
-        print(f"Created directory: {WG_DIR_CONFIG_PEER}")
 
-    # Ask user for port
     while True:
         listen_port = input("Enter the port number to use for WireGuard (default 51820): ") or "51820"
         if not listen_port.isdigit() or is_port_in_use(listen_port):
@@ -140,6 +138,7 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
 
 
     open_firewall_port(listen_port)
+    print(f"Created main file configuration '/etc/wireguard/wg0.conf' and subdirectories 'conf_peer', 'peer_key'!")
 
 
 
@@ -192,13 +191,21 @@ def find_next_available_ip(base_ip, used_ips):
 
 
 
-def load_peer_config(filename):
+def load_peer_config(filename, name):
+
+    wireguard_dir_conf = f"{HOME_DIR_USER}/wireguard_conf"
+    if not os.path.exists(wireguard_dir_conf):
+        os.makedirs(wireguard_dir_conf)
+
+    os.system(f"sudo cp {filename} {wireguard_dir_conf}/{name}")
+    os.system(f"sudo chown -R {USER}:{USER} {wireguard_dir_conf}/")
+
     while True:
         download = input("Do you want to download the peer configuration file from the server? (yes/no): ").lower()
         if download == "yes":
             print(f"Downloading {filename} from the server...")
             local_path = input("Enter the local path to save the file: ")
-            os.system(f"scp {USER}@{SERVER_PUBLIC_IP}:{filename} {local_path}")
+            os.system(f"scp {USER}@{SERVER_PUBLIC_IP}:{wireguard_dir_conf}/{name} {local_path}")
             print(f"{filename} downloaded to {local_path}")
             break
         elif download == "no":
@@ -263,8 +270,6 @@ PersistentKeepalive = 20
     with open(f"{WG_DIR_CONFIG_PEER}/{prefix_name}_peer.conf", 'w') as f:
         f.write(peer_config)
 
-    
-    print(next_ip)
     with open(f"{WG_DIR}/wg0.conf", 'a') as f:
         peer_entry = f"""
 
@@ -275,7 +280,7 @@ AllowedIPs = {next_ip}/32
         """
         f.write(peer_entry)
 
-    load_peer_config(f"{WG_DIR_CONFIG_PEER}/{prefix_name}_peer.conf")
+    load_peer_config(f"{WG_DIR_CONFIG_PEER}/{prefix_name}_peer.conf", f"{prefix_name}_peer.conf")
 
 
 
@@ -289,7 +294,10 @@ def restart_wireguard():
     os.system("sudo systemctl restart wg-quick@wg0")
 
 def main():
-     # Check if WireGuard is installed and running
+
+    check_superuser()
+
+    # Check if WireGuard is installed and running
     wg_installed = subprocess.run(["which", "wg"], capture_output=True, text=True).stdout.strip()
     wg_running = subprocess.run(["sudo", "systemctl", "is-active", "wg-quick@wg0"], capture_output=True, text=True).stdout.strip()
 

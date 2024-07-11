@@ -318,4 +318,6 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print("Your proccesin stoped!")
+        print(f"\nYour proccesin stoped!\n")
+        os.system("sudo apt purge wireguard wireguard-tools")
+        os.system("sudo rm -r /etc/wireguard")

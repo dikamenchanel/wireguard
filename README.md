@@ -12,7 +12,7 @@ This script installs WireGuard, sets up server and peer configurations, and star
     Download the script from the repository:
 
     ```bash
-    git clone [https://your-repository-url.git](https://github.com/dikamenchanel/wireguard.git)
+    git clone https://github.com/dikamenchanel/wireguard.git
     cd your-repository-name
     ```
 

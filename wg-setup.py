@@ -24,7 +24,6 @@ WG_DIR_SERVER_KEY = '/etc/wireguard/server_key'
 
 
 
-
 def get_public_ip():
     try:
         ip = requests.get('https://ifconfig.me').text
@@ -316,5 +315,7 @@ def main():
     restart_wireguard()
 
 if __name__ == '__main__':
-    main()
-
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Your proccesin stoped!")

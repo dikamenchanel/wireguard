@@ -44,4 +44,4 @@ This script installs WireGuard, sets up server and peer configurations, and star
 
 - Ensure you have the necessary permissions to move the script to `/usr/bin` and run it with superuser privileges.
 - The script will prompt you for necessary inputs, such as the server port and peer configuration details.
-
+- **Repeatable Use**: Running the script again will offer the option to create a new peer configuration, making the script reusable for adding multiple peers.

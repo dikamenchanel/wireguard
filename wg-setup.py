@@ -56,14 +56,8 @@ def install_wireguard():
         "fedora": "yum install epel-release -y && yum install wireguard-tools -y",
         "arch": "pacman -S wireguard-tools --noconfirm"
     }
-
-    distro = platform.node().lower()
-    if distro in package_managers:
-        install_command = package_managers[distro]
-        os.system(f"sudo {install_command}")
-    else:
-        raise Exception(f"Unsupported Linux distribution: {distro}")
-
+    
+    os.system("sudo apt install wireguard")
     print("WireGuard installation complete.")
 
 
@@ -126,7 +120,6 @@ PrivateKey = {private_key_server}
 Address = 10.0.0.1/24
 ListenPort = {listen_port}
 
-SaveConfig = true
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {interface_server} -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {interface_server} -j MASQUERADE
 
